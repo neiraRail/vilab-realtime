@@ -1,0 +1,25 @@
+{
+  "name": "vilab-realtime-server",
+  "version": "1.0.0",
+  "description": "NodeJS server that emits realtime data",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "vilab-realtime"
+  },
+  "keywords": [
+    "nodejs",
+    "socket",
+    "mongodb",
+    "realtime"
+  ],
+  "author": "neirarail",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.18.2",
+    "socket.io": "^4.6.1"
+  }
+}
