@@ -8,7 +8,11 @@ const server = app.listen(`${port}`, function () {
     console.log(`Server started on port ${port}`);
 });
 
-const io = require("socket.io")(server);
+const io = require("socket.io")(server, {
+    cors: {
+        origin: '*',
+    }
+});
 
 function getRandomValue() {
     return Math.floor(Math.random() * (50 - 5 + 1)) + 5;
