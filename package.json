@@ -1,5 +1,6 @@
 {
   "name": "vilab-realtime-server",
+  "type": "module",
   "version": "1.0.0",
   "description": "NodeJS server that emits realtime data",
   "main": "index.js",
@@ -20,6 +21,7 @@
   "license": "ISC",
   "dependencies": {
     "express": "^4.18.2",
+    "mongodb": "^5.2.0",
     "socket.io": "^4.6.1"
   }
 }
