@@ -9,7 +9,7 @@ import express from "express"
 const app = express();
 const port = 4000;
 
-const server = app.listen(`${port}`, function () {
+const server = app.listen(`${port}`, '0.0.0.0', function () {
     console.log(`Server started on port ${port}`);
 });
 
