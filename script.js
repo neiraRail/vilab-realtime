@@ -16,8 +16,14 @@ const getRandomNumber = (time) => {
 const insertDocument = (time) => {
     console.log("Insertando documento")
     const document = {
-        node: 0,
+        node: Number(process.argv[2]),
         value: getRandomNumber(time),
+        acc_x: getRandomNumber(time * 2),
+        acc_y: getRandomNumber(time * 0.5),
+        acc_z: getRandomNumber(time * 5),
+        gyr_x: getRandomNumber(time - time / 3),
+        gyr_y: getRandomNumber(time - 20),
+        gyr_z: getRandomNumber((time * 2) + 10),
         time_lap: time
     };
 
@@ -34,14 +40,16 @@ const insertDocument = (time) => {
 
 //setInterval(insertDocument, 100);
 
-let times = [100, 100, 100, 100]
+let times = [1000, 1000, 1000, 1000]
 const delay = ms => new Promise(resolve => setTimeout(resolve, ms))
 var global_time = 0;
 
-while (true) {
-    for (let time of times) {
-        await delay(time)
-        global_time += time
-        insertDocument(global_time)
-    }
+//while (true) {
+for (let time of times) {
+    await delay(time)
+    global_time += time
+    insertDocument(global_time)
 }
+//}
+
+console.log("Listo")
