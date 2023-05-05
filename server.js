@@ -24,28 +24,33 @@ const io = new Server(server, {
 io.on("connection", socket => {
     console.log("Socket conectado")
     socket.on('disconnect', function () {
+        // socket.disconnect()
         console.log('Socket desconectado');
     });
     socket.on('realtime', async (data) => {
         console.log("pidiendo nodo: %d", data.node)
+        console.log(data.node)
         try {
             const database = client.db("vibration_db");
             const eventos = database.collection("event");
 
             // Open a Change Stream on the "event" collection
-            const pipeline = [{ $match: { "fullDocument.node": data.node } }, { $match: { "operationType": "insert" } }]
+            const pipeline = [{ $match: { "fullDocument.node": Number(data.node) } }, { $match: { "operationType": "insert" } }]
             changeStream = eventos.watch(pipeline);
-
+            console.log("eventos being watched using pipeline:")
+            console.log(pipeline)
             // Print change events
             for await (const change of changeStream) {
-                console.log("Received change:\n", change);
-                socket.broadcast.emit("newdata", change.fullDocument)
+                console.log("Received change:\n");
+                socket.emit("newdata", change.fullDocument)
             }
+            console.log("closing stream...")
 
             await changeStream.close();
+            console.log("Stream closed")
 
         } finally {
-            await client.close();
+            //await client.close();
         }
     })
 });
