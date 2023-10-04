@@ -33,6 +33,7 @@ io.on("connection", socket => {
         try {
             const database = client.db("vibration_db");
             const eventos = database.collection("lectura");
+            
 
             // Open a Change Stream on the "event" collection
             const pipeline = [{ $match: { "fullDocument.node": Number(data.node) } }, { $match: { "operationType": "insert" } }]
