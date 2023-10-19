@@ -1,5 +1,7 @@
 //server.js
 import { MongoClient } from "mongodb";
+import fs from 'fs';
+
 const uri = "mongodb://localhost:27017";
 const client = new MongoClient(uri);
 
@@ -9,8 +11,16 @@ import express from "express"
 const app = express();
 const port = 4000;
 
+const logToFile = (message) => {
+    const formattedMessage = `[${new Date().toISOString()}] ${message}\n`;
+    fs.appendFile('vilab_realtime.log', formattedMessage, (err) => {
+        if (err) throw err;
+    });
+};
+
 const server = app.listen(`${port}`, function () {
     console.log(`Server started on port ${port}`);
+    logToFile(`Server started on port ${port}`);
 });
 
 import { Server } from "socket.io";
@@ -23,13 +33,15 @@ const io = new Server(server, {
 //La vista vue envía un socker, dependiendo de qué nodo
 io.on("connection", socket => {
     console.log("Socket conectado")
+    logToFile("Socket conectado");
     socket.on('disconnect', function () {
         // socket.disconnect()
         console.log('Socket desconectado');
+        logToFile('Socket desconectado');
     });
     socket.on('realtime', async (data) => {
         console.log("pidiendo nodo: %d", data.node)
-        console.log(data.node)
+        logToFile(`pidiendo nodo: ${data.node}`);
         try {
             const database = client.db("vibration_db");
             const eventos = database.collection("lectura");
@@ -37,17 +49,20 @@ io.on("connection", socket => {
             // Open a Change Stream on the "event" collection
             const pipeline = [{ $match: { "fullDocument.node": Number(data.node) } }, { $match: { "operationType": "insert" } }]
             changeStream = eventos.watch(pipeline);
-            console.log("eventos being watched using pipeline:")
-            console.log(pipeline)
+            console.log(`eventos being watched using pipeline: ${pipeline}`)
+            logToFile(`eventos being watched using pipeline: ${pipeline}`);
             // Print change events
             for await (const change of changeStream) {
                 console.log("Received change:\n");
+                logToFile("Received change:\n");
                 socket.emit("newdata", change.fullDocument)
             }
             console.log("closing stream...")
+            logToFile("closing stream...");
 
             await changeStream.close();
             console.log("Stream closed")
+            logToFile("Stream closed");
 
         } finally {
             //await client.close();
