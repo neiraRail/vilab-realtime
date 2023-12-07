@@ -7,4 +7,5 @@ socket.on("connect", () => {
 
 socket.on("newfeature", (data) => {
     console.log("new feature: ", data)
+    console.log(data)
 });
