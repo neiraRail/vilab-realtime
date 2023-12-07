@@ -40,6 +40,10 @@ io.on("connection", socket => {
         console.log('Socket desconectado');
         logToFile('Socket desconectado');
     });
+    socket.on('feature', async (data) => {
+        console.log("pidiendo features de nodo: %d", data.node)
+    })
+
     socket.on('realtime', async (data) => {
         console.log("pidiendo nodo: %d", data.node)
         logToFile(`pidiendo nodo: ${data.node}`);
