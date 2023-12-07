@@ -42,6 +42,33 @@ io.on("connection", socket => {
     });
     socket.on('feature', async (data) => {
         console.log("pidiendo features de nodo: %d", data.node)
+        logToFile(`pidiendo features de nodo: ${data.node}`);
+        try {
+            const database = client.db("vibration_db");
+            const measures = database.collection("feature");
+
+            // Open a Change Stream on the "feature" collection
+            const pipeline = [{ $match: { "fullDocument.node": Number(data.node) } }, { $match: { "operationType": "insert" } }]
+            changeStream = measures.watch(pipeline);
+            console.log(`measures being watched using pipeline: ${pipeline}`)
+            logToFile(`measures being watched using pipeline: ${pipeline}`);
+            for await (const change of changeStream) {
+                console.log("Received change:\n");
+                logToFile("Received change:\n");
+                socket.emit("newfeature", change.fullDocument)
+            }
+            console.log("closing stream...")
+            logToFile("closing stream...");
+
+            await changeStream.close();
+            console.log("Stream closed")
+            logToFile("Stream closed");
+        }
+        catch (err) {
+            console.log(err);
+            logToFile(err);
+        }
+
     })
 
     socket.on('realtime', async (data) => {
@@ -70,7 +97,12 @@ io.on("connection", socket => {
             console.log("Stream closed")
             logToFile("Stream closed");
 
-        } finally {
+        }
+        catch (err) {
+            console.log(err);
+            logToFile(err);
+        }
+        finally {
             //await client.close();
         }
     })
